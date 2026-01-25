@@ -7,6 +7,6 @@ pub struct ServerConfig {
 
 impl ServerConfig {
     pub fn port(&self) -> u16 {
-        self.port.unwrap_or(3000)
+        self.port.unwrap_or(8080)
     }
 }

@@ -1,0 +1,59 @@
+    Checking axum-starter v0.1.0 (D:\Code\Rust\axum-starter)
+error[E0432]: unresolved import `crate::app::config::ServerConfig`
+ --> src\app\server.rs:2:37
+  |
+2 | use crate::app::config::{AppConfig, ServerConfig};
+  |                                     ^^^^^^^^^^^^ no `ServerConfig` in `app::config`
+
+error[E0425]: cannot find type `ServerConfig` in this scope
+  --> src\app\config.rs:10:13
+   |
+10 |     server: ServerConfig,
+   |             ^^^^^^^^^^^^ not found in this scope
+
+error[E0425]: cannot find type `DatabaseConfig` in this scope
+  --> src\app\config.rs:11:15
+   |
+11 |     database: DatabaseConfig,
+   |               ^^^^^^^^^^^^^^ not found in this scope
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `server`
+  --> src\app\config.rs:33:30
+   |
+33 |     pub fn server(&self) -> &server::ServerConfig {
+   |                              ^^^^^^ use of unresolved module or unlinked crate `server`
+   |
+help: there is a crate or module with a similar name
+   |
+33 -     pub fn server(&self) -> &server::ServerConfig {
+33 +     pub fn server(&self) -> &serde::ServerConfig {
+   |
+help: consider importing this module
+   |
+ 1 + use crate::app::server;
+   |
+
+warning: unused import: `AppConfig`
+ --> src\app\server.rs:2:26
+  |
+2 | use crate::app::config::{AppConfig, ServerConfig};
+  |                          ^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `database`
+  --> src\app\config.rs:36:32
+   |
+36 |     pub fn database(&self) -> &database::DatabaseConfig {
+   |                                ^^^^^^^^ use of unresolved module or unlinked crate `database`
+   |
+help: to make use of source file src\app\database.rs, use `mod database` in this file to declare the module
+  --> src\main.rs:1:1
+   |
+ 1 + mod database;
+   |
+
+Some errors have detailed explanations: E0425, E0432, E0433.
+For more information about an error, try `rustc --explain E0425`.
+warning: `axum-starter` (bin "axum-starter") generated 1 warning
+error: could not compile `axum-starter` (bin "axum-starter") due to 5 previous errors; 1 warning emitted

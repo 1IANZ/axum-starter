@@ -1,18 +1,18 @@
-use std::sync::LazyLock;
-
 use anyhow::Context;
 use config::Config;
 use serde::Deserialize;
-
-mod database;
-mod server;
+use std::sync::LazyLock;
+pub mod database;
+pub mod server;
+pub use database::DatabaseConfig;
+pub use server::ServerConfig;
 
 static CONFIG: LazyLock<AppConfig> =
     LazyLock::new(|| AppConfig::load().expect("Failed to load config"));
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
-    server: server::ServerConfig,
-    database: database::DatabaseConfig,
+    server: ServerConfig,
+    database: DatabaseConfig,
 }
 
 impl AppConfig {

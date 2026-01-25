@@ -1,9 +1,8 @@
-use std::{cmp::max, time::Duration};
-
-use crate::config;
+use crate::app::config;
 use sea_orm::{
     ConnectOptions, ConnectionTrait, Database, DatabaseConnection, DbBackend, Statement,
 };
+use std::{cmp::max, time::Duration};
 pub async fn init() -> anyhow::Result<DatabaseConnection> {
     let database_config = config::get().database();
     let mut options = ConnectOptions::new(format!(
