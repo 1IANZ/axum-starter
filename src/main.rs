@@ -1,5 +1,6 @@
 mod api;
 mod app;
+mod config;
 mod entity;
 
 #[tokio::main]
