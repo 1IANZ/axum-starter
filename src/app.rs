@@ -1,11 +1,12 @@
 mod database;
 pub mod error;
+mod latency;
 mod logger;
 pub mod response;
-use axum::Router;
-use sea_orm::DatabaseConnection;
 mod server;
 use crate::config;
+use axum::Router;
+use sea_orm::DatabaseConnection;
 #[derive(Clone)]
 pub struct AppState {
     pub db: DatabaseConnection,
