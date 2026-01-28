@@ -24,6 +24,7 @@ tower-http = { version = "0.6.8", features = [
     "limit",
     "cors",
     "normalize-path",
+    "auth"
 ] }
 xid = "1.1.1"
 bytesize = "2.3.1"
@@ -32,3 +33,4 @@ axum-valid = { version = "0.24.0", features = ["full_validator"] }
 regex = "1.12.2"
 idgenerator = "2.0.0"
 bcrypt = "0.18.0"
+jsonwebtoken = { version = "10.3.0" , features = ["rust_crypto"]}

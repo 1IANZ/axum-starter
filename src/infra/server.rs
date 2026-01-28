@@ -1,7 +1,8 @@
-use crate::app::config::ServerConfig;
-use crate::app::{latency::LatencyOnResponse, AppState};
-use axum::extract::{DefaultBodyLimit, Request};
+use crate::config::ServerConfig;
+use crate::core::AppState;
+use crate::infra::latency::LatencyOnResponse;
 use axum::Router;
+use axum::extract::{DefaultBodyLimit, Request};
 use bytesize::ByteSize;
 use std::net::SocketAddr;
 use std::time::Duration;
@@ -30,18 +31,23 @@ impl Server {
         Ok(())
     }
     fn build_router(&self, state: AppState, router: Router<AppState>) -> Router {
+        // 请求超时保护
         let timeout = TimeoutLayer::with_status_code(
             axum::http::StatusCode::REQUEST_TIMEOUT,
             Duration::from_secs(60),
         );
+        // 限制 Body 大小
         let body_limit = DefaultBodyLimit::max(ByteSize::mib(10).as_u64() as usize);
+        // CORS 配置
         let cors = CorsLayer::new()
             .allow_origin(cors::Any)
             .allow_headers(cors::Any)
             .allow_methods(cors::Any)
             .allow_credentials(false)
             .max_age(Duration::from_secs(3600 * 12));
+        // 统一路径格式，去除尾部斜杠
         let normalize_path = NormalizePathLayer::trim_trailing_slash();
+        // 链路追踪与响应耗时统计
         let tracing = TraceLayer::new_for_http()
             .make_span_with(|request: &Request| {
                 let method = request.method();

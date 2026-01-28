@@ -1,8 +1,9 @@
-use crate::app::id;
+use crate::core::id;
 use sea_orm::ActiveValue;
 use sea_orm::entity::prelude::*;
 use sea_orm::prelude::async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use crate::core::enumeration::Gender;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(schema_name = "demo", table_name = "sys_user")]
@@ -11,7 +12,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: String,
     pub name: String,
-    pub gender: String,
+    pub gender: Gender,
     pub account: String,
     pub password: String,
     pub mobile_phone: String,

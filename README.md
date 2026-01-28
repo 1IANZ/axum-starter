@@ -1,5 +1,19 @@
 # axum-starter
 
+## 目录结构（分层）
+
+```
+src/
+  config/               # 配置加载
+  core/                 # 核心能力（日志、错误、抽取器、JWT、中间件等）
+  infra/                # 基础设施（数据库、服务启动、链路追踪）
+  entity/               # 数据库实体
+  modules/              # 业务模块（handler/service/repo）
+    auth/
+    user/
+    router.rs           # 路由聚合
+```
+
 1. clone the repository
 
 ```bash

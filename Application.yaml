@@ -7,3 +7,5 @@ database:
   port: 5432
   name: postgres
   schema: demo
+jwt:
+  secret: 12345678
