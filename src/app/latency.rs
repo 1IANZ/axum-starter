@@ -10,13 +10,11 @@ impl<B> OnResponse<B> for LatencyOnResponse {
         self,
         response: &axum::http::Response<B>,
         latency: std::time::Duration,
-        _span: &tracing::Span,
+        span: &tracing::Span,
     ) {
-        tracing::info!(
-            latency=%Latency(latency),
-            status=response.status().as_u16(),
-            "finished request"
-        );
+        span.record("status", &response.status().as_u16());
+        span.record("latency", &tracing::field::display(Latency(latency)));
+        tracing::info!(parent: span,"API Response");
     }
 }
 struct Latency(Duration);

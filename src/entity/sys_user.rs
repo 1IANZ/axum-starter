@@ -1,4 +1,7 @@
+use crate::app::id;
+use sea_orm::ActiveValue;
 use sea_orm::entity::prelude::*;
+use sea_orm::prelude::async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Deserialize)]
@@ -21,4 +24,15 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
-impl ActiveModelBehavior for ActiveModel {}
+#[async_trait]
+impl ActiveModelBehavior for ActiveModel {
+    async fn before_save<C>(mut self, _db: &C, insert: bool) -> Result<Self, DbErr>
+    where
+        C: ConnectionTrait,
+    {
+        if insert {
+            self.id = ActiveValue::Set(id::next_id());
+        }
+        Ok(self)
+    }
+}

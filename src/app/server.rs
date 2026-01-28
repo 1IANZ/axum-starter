@@ -1,7 +1,7 @@
 use crate::app::config::ServerConfig;
-use crate::app::{AppState, latency::LatencyOnResponse};
-use axum::Router;
+use crate::app::{latency::LatencyOnResponse, AppState};
 use axum::extract::{DefaultBodyLimit, Request};
+use axum::Router;
 use bytesize::ByteSize;
 use std::net::SocketAddr;
 use std::time::Duration;
@@ -47,8 +47,7 @@ impl Server {
                 let method = request.method();
                 let path = request.uri().path();
                 let id = xid::new();
-
-                tracing::info_span!("API Request",id = %id, method = %method,path = %path)
+                tracing::info_span!("API Request",id = %id, method = %method,path = %path ,status = tracing::field::Empty, latency = tracing::field::Empty, )
             })
             .on_request(())
             .on_failure(())
