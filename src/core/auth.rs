@@ -1,5 +1,5 @@
 use jsonwebtoken::{
-    decode, encode, get_current_timestamp, Algorithm, DecodingKey, EncodingKey, Header, Validation,
+    Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode, get_current_timestamp,
 };
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -28,17 +28,17 @@ pub struct Claims {
 pub struct JwtConfig {
     pub secret: Cow<'static, str>,
     pub expiration: Duration,
-    pub audience: String,
-    pub issuer: String,
+    pub audience: Cow<'static, str>,
+    pub issuer: Cow<'static, str>,
 }
 
 impl Default for JwtConfig {
     fn default() -> Self {
         Self {
             secret: Cow::Borrowed(crate::config::get().jwt().secret()),
-            expiration: Duration::from_secs(60 * 60),
-            audience: "audience".to_string(),
-            issuer: "issuer".to_string(),
+            expiration: Duration::from_secs(crate::config::get().jwt().expiration()),
+            audience: Cow::Borrowed(crate::config::get().jwt().audience()),
+            issuer: Cow::Borrowed(crate::config::get().jwt().issuer()),
         }
     }
 }
@@ -68,15 +68,13 @@ impl JWT {
             header: Header::new(Algorithm::HS256),
             validation,
             expiration: config.expiration,
-            audience: config.audience,
-            issuer: config.issuer,
+            audience: config.audience.to_string(),
+            issuer: config.issuer.to_string(),
         }
     }
 
     pub fn encode(&self, principal: Principal) -> anyhow::Result<String> {
         let current_timestamp = get_current_timestamp();
-
-        // 生成 JWT Claims（包含过期时间、签发方等）
         let claims = Claims {
             jti: xid::new().to_string(),
             sub: format!("{}:{}", principal.id, principal.name),
@@ -90,14 +88,17 @@ impl JWT {
     }
 
     pub fn decode(&self, token: &str) -> anyhow::Result<Principal> {
-        // 解码 JWT，并从 sub 中还原身份
         let claims: Claims = decode(token, &self.decode_secret, &self.validation)?.claims;
         let mut parts = claims.sub.splitn(2, ':');
-
-        let principal = Principal {
-            id: parts.next().unwrap().to_string(),
-            name: parts.next().unwrap().to_string(),
-        };
+        let id = parts
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("Token sub 格式错误: 缺少 ID"))?
+            .to_string();
+        let name = parts
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("Token sub 格式错误: 缺少 Name (未找到分隔符 ':')"))?
+            .to_string();
+        let principal = Principal { id, name };
         Ok(principal)
     }
 }
@@ -109,6 +110,5 @@ impl Default for JWT {
 }
 
 pub fn get_jwt() -> &'static JWT {
-    // 全局单例 JWT 组件
     &DEFAULT_JWT
 }

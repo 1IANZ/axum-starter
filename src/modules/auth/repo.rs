@@ -1,4 +1,3 @@
-// Repo 层：集中处理数据库读写
 use crate::core::error::ApiResult;
 use crate::entity::prelude::*;
 use crate::entity::sys_user;

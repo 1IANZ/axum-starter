@@ -29,7 +29,6 @@ macro_rules! impl_from_request {
                 parts: &mut Parts,
                 state: &S,
             ) -> Result<Self, Self::Rejection> {
-                // 统一将校验过的值转换为业务类型
                 Ok($name(Valid::from_request_parts(parts, state).await?.0.0))
             }
         }

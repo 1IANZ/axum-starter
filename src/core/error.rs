@@ -65,7 +65,6 @@ impl IntoResponse for ApiError {
 impl From<ValidRejection<ApiError>> for ApiError {
     fn from(value: ValidRejection<ApiError>) -> Self {
         match value {
-            // 参数校验错误在此统一转换
             ValidRejection::Valid(errors) => ApiError::Validation(errors.to_string()),
             ValidRejection::Inner(errors) => errors,
         }

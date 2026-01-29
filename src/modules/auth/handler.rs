@@ -1,14 +1,14 @@
 // Handler 层：负责参数解析与响应包装
+use crate::core::AppState;
 use crate::core::auth::Principal;
 use crate::core::error::ApiResult;
+use crate::core::extract::valid::ValidJson;
 use crate::core::middleware::get_auth_layer;
 use crate::core::response::ApiResponse;
-use crate::core::extract::valid::ValidJson;
-use crate::core::AppState;
 use crate::modules::auth::dto::{LoginParams, LoginResult};
 use crate::modules::auth::service;
 use axum::extract::{ConnectInfo, State};
-use axum::{debug_handler, routing, Extension, Router};
+use axum::{Extension, Router, debug_handler, routing};
 use std::net::SocketAddr;
 
 pub fn create_router() -> Router<AppState> {
@@ -36,6 +36,5 @@ async fn login(
 async fn get_user_info(
     Extension(principal): Extension<Principal>,
 ) -> ApiResult<ApiResponse<Principal>> {
-    // 已由 JWT 中间件完成身份注入
     Ok(ApiResponse::ok("ok", Some(principal)))
 }

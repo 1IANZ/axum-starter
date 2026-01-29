@@ -9,3 +9,6 @@ database:
   schema: demo
 jwt:
   secret: 12345678
+  expiration: 3600,
+  audience: audience
+  issuer: issuer
