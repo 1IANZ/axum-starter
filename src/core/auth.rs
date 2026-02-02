@@ -14,6 +14,12 @@ pub struct Principal {
     pub name: String,
 }
 
+impl Principal {
+    pub fn new(id: String, name: String) -> Self {
+        Self { id, name }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     jti: String,
@@ -22,6 +28,8 @@ pub struct Claims {
     iss: String,
     iat: u64,
     exp: u64,
+
+    name: String,
 }
 
 #[derive(Debug)]
@@ -77,11 +85,13 @@ impl JWT {
         let current_timestamp = get_current_timestamp();
         let claims = Claims {
             jti: xid::new().to_string(),
-            sub: format!("{}:{}", principal.id, principal.name),
+            sub: principal.id,
             aud: self.audience.clone(),
             iss: self.issuer.clone(),
             iat: current_timestamp,
             exp: current_timestamp.saturating_add(self.expiration.as_secs()),
+
+            name: principal.name,
         };
 
         Ok(encode(&self.header, &claims, &self.encode_secret)?)
@@ -89,16 +99,8 @@ impl JWT {
 
     pub fn decode(&self, token: &str) -> anyhow::Result<Principal> {
         let claims: Claims = decode(token, &self.decode_secret, &self.validation)?.claims;
-        let mut parts = claims.sub.splitn(2, ':');
-        let id = parts
-            .next()
-            .ok_or_else(|| anyhow::anyhow!("Token sub 格式错误: 缺少 ID"))?
-            .to_string();
-        let name = parts
-            .next()
-            .ok_or_else(|| anyhow::anyhow!("Token sub 格式错误: 缺少 Name (未找到分隔符 ':')"))?
-            .to_string();
-        let principal = Principal { id, name };
+
+        let principal = Principal::new(claims.sub, claims.name);
         Ok(principal)
     }
 }

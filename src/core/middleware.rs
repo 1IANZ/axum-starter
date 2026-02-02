@@ -35,7 +35,6 @@ impl AsyncAuthorizeRequest<Body> for JWTAuth {
         let jwt = self.jwt;
 
         Box::pin(async move {
-            // 从 Authorization 头中提取 Bearer Token
             let token = request
                 .headers()
                 .get(header::AUTHORIZATION)
